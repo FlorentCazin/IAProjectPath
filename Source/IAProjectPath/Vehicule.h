@@ -31,5 +31,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Math")
-	float truncate(FVector v, float f);
+	FVector Truncate(FVector steering_direction, float max_force);
+
+	UFUNCTION(BlueprintCallable, Category="AlgoDeplacement")
+	void VehiculeMovement(FVector steering_direction);
+
+	UFUNCTION(BlueprintCallable, Category="AlgoDeplacement")
+	void VehiculeOrientation();
+
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	FVector seek(AActor *target);
+
 };

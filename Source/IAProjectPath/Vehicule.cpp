@@ -2,7 +2,6 @@
 
 
 #include "Vehicule.h"
-#include "FMath/UnrealMathUtility.h"
 
 // Sets default values
 AVehicule::AVehicule()
@@ -15,6 +14,7 @@ AVehicule::AVehicule()
 void AVehicule::BeginPlay()
 {
 	Super::BeginPlay();
+	vehiculeDataAsset->position = this->GetActorLocation();
 	
 }
 
@@ -32,8 +32,37 @@ void AVehicule::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-float AVehicule::truncate(FVector v, float f) {
-	float norm = v.Size();
-	return FMath::Min(norm, f);
+//si norm vecteur plus petite que max (soit f) alors on return le vecteur sinon on prend vecteur=>normalise *max et donc vecteur norm max
+//pour ne pas que le vecteur dépasse l'accelaration maximal du vehicule
+// max_force = f, steering_direction=v
+//Vehicule vers point arriver => vecteur, ce vecteur on verif qu'il est plus grand ou non que l'acceleration autorisé et donc si plus grand le mettre a la taille de l'acceleration
+//pour eviter qu'il aille d'un seul coup au point et donc respecte pas l'acceleration etc (effet etrange sinon), et si plus petit que l'acceleration le laisser petit pour pas qu'il depasse
+//le point d'arriver.
+FVector AVehicule::Truncate(FVector steering_direction, float max_force) {
+	float norm = steering_direction.Size();
+	//si la norm du vecteur est plus petite ou égale à f
+	if (FMath::Min(norm, max_force) <= max_force) {
+		//on return le vecteur
+		return steering_direction;
+	}
+	//sinon, retourner le vecteur normalisé * f (pour changer la taille du vecteur)
+	return steering_direction.GetSafeNormal() * max_force;
 }
 
+void AVehicule::VehiculeMovement(FVector steering_direction) {
+	FVector stearing_force = Truncate(steering_direction, vehiculeDataAsset->max_force);
+	FVector acceleration = stearing_force / vehiculeDataAsset->mass;
+	vehiculeDataAsset->velocity = Truncate(vehiculeDataAsset->velocity, vehiculeDataAsset->max_speed);
+	vehiculeDataAsset->position = vehiculeDataAsset->position + vehiculeDataAsset->velocity;
+	this->SetActorLocation(vehiculeDataAsset->position);
+}
+
+void AVehicule::VehiculeOrientation() {
+	FVector new_forward = vehiculeDataAsset->velocity.GetSafeNormal();
+}
+
+FVector AVehicule::seek(AActor *target) {
+	FVector targetPosition = target->GetActorLocation();
+	FVector desired_velocity = (targetPosition - vehiculeDataAsset->position).GetSafeNormal() * vehiculeDataAsset->max_speed;
+	return desired_velocity - vehiculeDataAsset->velocity;
+}
