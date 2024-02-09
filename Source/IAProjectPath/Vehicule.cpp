@@ -14,8 +14,8 @@ AVehicule::AVehicule()
 void AVehicule::BeginPlay()
 {
 	Super::BeginPlay();
-	vehiculeDataAsset->position = this->GetActorLocation();
-	vehiculeDataAsset->orientation = FMatrix::Identity;
+	position = this->GetActorLocation();
+	orientation = FMatrix::Identity;
 	
 }
 
@@ -39,23 +39,23 @@ void AVehicule::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 //Vehicule vers point arriver => vecteur, ce vecteur on verif qu'il est plus grand ou non que l'acceleration autorisé et donc si plus grand le mettre a la taille de l'acceleration
 //pour eviter qu'il aille d'un seul coup au point et donc respecte pas l'acceleration etc (effet etrange sinon), et si plus petit que l'acceleration le laisser petit pour pas qu'il depasse
 //le point d'arriver.
-FVector AVehicule::Truncate(FVector steering_direction, float max_force) {
+FVector AVehicule::Truncate(FVector steering_direction, float maxForce) {
 	float norm = steering_direction.Size();
 	//si la norm du vecteur est plus petite ou égale à f
-	if (norm <= max_force) {
+	if (norm <= maxForce) {
 		//on return le vecteur
 		return steering_direction;
 	}
 	//sinon, retourner le vecteur normalisé * f (pour changer la taille du vecteur)
-	return steering_direction.GetSafeNormal() * max_force;
+	return steering_direction.GetSafeNormal() * maxForce;
 }
 
 void AVehicule::VehiculeMovement(FVector steering_direction) {
-	FVector stearing_force = Truncate(steering_direction, vehiculeDataAsset->max_force);
-	FVector acceleration = stearing_force / vehiculeDataAsset->mass;
-	vehiculeDataAsset->velocity = Truncate(vehiculeDataAsset->velocity + acceleration, vehiculeDataAsset->max_speed);
-	vehiculeDataAsset->position = vehiculeDataAsset->position + vehiculeDataAsset->velocity;
-	this->SetActorLocation(vehiculeDataAsset->position);
+	FVector stearing_force = Truncate(steering_direction, max_force);
+	FVector acceleration = stearing_force / mass;
+	velocity = Truncate(velocity + acceleration, max_speed);
+	position = position + velocity;
+	this->SetActorLocation(position);
 	VehiculeOrientation();
 }
 
@@ -78,21 +78,27 @@ void AVehicule::VehiculeOrientation() {
 	this->SetActorRotation(newRotation);
 	*/
 	
-	FVector new_forward = vehiculeDataAsset->velocity.GetSafeNormal();
-	FVector approximate_up = FVector(0.0f, 0.0f, vehiculeDataAsset->position[2]).GetSafeNormal();
-	FVector new_side = FVector::CrossProduct(new_forward, approximate_up);
-	FVector new_up = FVector::CrossProduct(new_forward, new_side);
+	FVector new_forward = velocity.GetSafeNormal();
+	FVector approximate_up = FVector(0.0f, 0.0f, position[2]).GetSafeNormal();
+	FVector new_side = FVector::CrossProduct(new_forward, approximate_up).GetSafeNormal();
+	FVector new_up = FVector::CrossProduct(new_forward, new_side).GetSafeNormal();
 
-	vehiculeDataAsset->orientation.SetAxes(&new_forward, &new_side, &new_up, &FVector::ZeroVector);
-	FQuat newRotation = FQuat(vehiculeDataAsset->orientation);
+	orientation.SetAxes(&new_forward, &new_side, &new_up, &FVector::ZeroVector);
+	FQuat newRotation = FQuat(orientation);
 	this->SetActorRotation(newRotation);
 	
 }
 
 FVector AVehicule::seek(AActor *target) {
 	FVector targetPosition = target->GetActorLocation();
-	FVector desired_velocity = (targetPosition - vehiculeDataAsset->position).GetSafeNormal() * vehiculeDataAsset->max_speed;
-	return desired_velocity - vehiculeDataAsset->velocity;
+	FVector desired_velocity = (targetPosition - position).GetSafeNormal() * max_speed;
+	return desired_velocity - velocity;
 }
 
 //force->kg/m calculer en cm/s
+
+FVector AVehicule::Flee(AActor* target) {
+	FVector targetPosition = target->GetActorLocation();
+	FVector desired_velocity = (targetPosition - position).GetSafeNormal() * -max_speed;
+	return desired_velocity - velocity;
+}

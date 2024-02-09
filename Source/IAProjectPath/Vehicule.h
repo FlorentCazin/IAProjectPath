@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "VehiculeDataAsset.h"
 #include "Vehicule.generated.h"
 
 UCLASS(Blueprintable)
@@ -16,8 +15,18 @@ public:
 	// Sets default values for this character's properties
 	AVehicule();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicule Data")
-	UVehiculeDataAsset* vehiculeDataAsset;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
+	float mass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
+	FVector position;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
+	FVector velocity;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
+	FMatrix orientation;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
+	float max_force;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
+	float max_speed;
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,7 +40,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Math")
-	FVector Truncate(FVector steering_direction, float max_force);
+	FVector Truncate(FVector steering_direction, float maxForce);
 
 	UFUNCTION(BlueprintCallable, Category="AlgoDeplacement")
 	void VehiculeMovement(FVector steering_direction);
@@ -41,5 +50,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
 	FVector seek(AActor *target);
+
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	FVector Flee(AActor* target);
 
 };
