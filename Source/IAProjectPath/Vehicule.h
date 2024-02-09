@@ -54,4 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
 	FVector Flee(AActor* target);
 
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	FVector Pursuit(AVehicule* target, float turningParameter);
+
 };

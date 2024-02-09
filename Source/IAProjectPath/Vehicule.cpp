@@ -102,3 +102,14 @@ FVector AVehicule::Flee(AActor* target) {
 	FVector desired_velocity = (targetPosition - position).GetSafeNormal() * -max_speed;
 	return desired_velocity - velocity;
 }
+
+FVector AVehicule::Pursuit(AVehicule* target, float turningParameter) {
+	float distance = (GetActorLocation() - target->GetActorLocation()).Size();
+	float t = distance * turningParameter;
+	FVector targetLocation = target->GetActorLocation();
+	FVector targetVelocity = target->velocity;
+	FVector targetFutureVelocity = targetVelocity * t;
+	FVector targetFutureLocation = targetLocation + targetFutureVelocity;
+	FVector desired_velocity = (targetFutureLocation - position).GetSafeNormal() * max_speed;
+	return desired_velocity - velocity;
+}
