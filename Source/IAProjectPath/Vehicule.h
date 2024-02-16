@@ -27,6 +27,10 @@ public:
 	float max_force;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
 	float max_speed;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VehiculeProperty")
+
+	int circuitIndexToReach;
+	bool reachedIsDestination;
 
 protected:
 	// Called when the game starts or when spawned
@@ -56,5 +60,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
 	FVector Pursuit(AVehicule* target, float turningParameter);
+
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	FVector Arrival(AActor* target, float slowing_distance);
+
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	bool Circuit(TArray<AActor*> targets);
+
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	void OneWay(TArray<AActor*> targets);
+
 
 };

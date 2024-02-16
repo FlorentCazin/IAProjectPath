@@ -8,6 +8,7 @@ AVehicule::AVehicule()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	reachedIsDestination = false;
 }
 
 // Called when the game starts or when spawned
@@ -62,21 +63,6 @@ void AVehicule::VehiculeMovement(FVector steering_direction) {
 //unreal utilise des angles, calcul fait avec des vecteurs faut transformer en angle
 //(111) max, val entre 0 et 1
 void AVehicule::VehiculeOrientation() {
-	/*
-	FVector forward = this->GetActorForwardVector();
-	FVector ori = this->GetActorRotation().Vector();
-
-
-	FVector new_forward = forward.GetSafeNormal();
-	FVector approximate_up = FVector(0.0f, 0.0f, ori[2]);
-	FVector new_side = FVector::CrossProduct(new_forward, approximate_up);
-	FVector new_up = FVector::CrossProduct(new_forward, new_side);
-
-	FMatrix m = FMatrix::Identity;
-	m.SetAxes(&new_forward, &new_side, &new_up, &FVector::ZeroVector);
-	FQuat newRotation = FQuat(m);
-	this->SetActorRotation(newRotation);
-	*/
 	
 	FVector new_forward = velocity.GetSafeNormal();
 	FVector approximate_up = FVector(0.0f, 0.0f, position[2]).GetSafeNormal();
@@ -113,3 +99,43 @@ FVector AVehicule::Pursuit(AVehicule* target, float turningParameter) {
 	FVector desired_velocity = (targetFutureLocation - position).GetSafeNormal() * max_speed;
 	return desired_velocity - velocity;
 }
+
+FVector AVehicule::Arrival(AActor* target, float slowing_distance) {
+	FVector targetPosition = target->GetActorLocation();
+
+	FVector target_offset = targetPosition - position;
+	float distance = target_offset.Size();
+	float ramped_speed = max_speed * (distance / slowing_distance);
+	float clipped_speed = FMath::Min(ramped_speed, max_speed);
+	FVector desired_velocity = (clipped_speed / distance) * target_offset;
+	return desired_velocity - velocity;
+}
+
+bool AVehicule::Circuit(TArray<AActor*> targets) {
+	if (circuitIndexToReach < targets.Num()) {
+		VehiculeMovement(seek(targets[circuitIndexToReach]));
+		if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 1000) {
+			circuitIndexToReach++;
+		}
+		if (circuitIndexToReach == targets.Num() - 2) return true;
+		else return false;
+	}
+	else {
+		circuitIndexToReach = 0;
+		return false;
+	}
+}
+
+void AVehicule::OneWay(TArray<AActor*> targets) {
+	if (!reachedIsDestination) {
+		bool returnFunctionCircuit = Circuit(targets);
+		if (returnFunctionCircuit) {
+			reachedIsDestination = true;
+		}
+	}
+	else {
+		Arrival(targets[targets.Num() - 1], 1000);
+	}
+}
+
+
