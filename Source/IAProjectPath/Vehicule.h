@@ -31,6 +31,7 @@ public:
 
 	int circuitIndexToReach;
 	bool reachedIsDestination;
+	bool twoWayReverseSens;
 
 protected:
 	// Called when the game starts or when spawned
@@ -70,5 +71,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
 	void OneWay(TArray<AActor*> targets);
 
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	void TwoWay(TArray<AActor*> targets);
 
 };

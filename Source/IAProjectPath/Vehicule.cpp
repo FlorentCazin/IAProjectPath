@@ -9,6 +9,7 @@ AVehicule::AVehicule()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	reachedIsDestination = false;
+	circuitIndexToReach = 0;
 }
 
 // Called when the game starts or when spawned
@@ -102,7 +103,6 @@ FVector AVehicule::Pursuit(AVehicule* target, float turningParameter) {
 
 FVector AVehicule::Arrival(AActor* target, float slowing_distance) {
 	FVector targetPosition = target->GetActorLocation();
-
 	FVector target_offset = targetPosition - position;
 	float distance = target_offset.Size();
 	float ramped_speed = max_speed * (distance / slowing_distance);
@@ -112,12 +112,13 @@ FVector AVehicule::Arrival(AActor* target, float slowing_distance) {
 }
 
 bool AVehicule::Circuit(TArray<AActor*> targets) {
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString(TEXT("index : %i"),circuitIndexToReach));
 	if (circuitIndexToReach < targets.Num()) {
 		VehiculeMovement(seek(targets[circuitIndexToReach]));
-		if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 1000) {
+		if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 500) {
 			circuitIndexToReach++;
 		}
-		if (circuitIndexToReach == targets.Num() - 2) return true;
+		if (circuitIndexToReach == targets.Num() - 1) return true;
 		else return false;
 	}
 	else {
@@ -127,15 +128,33 @@ bool AVehicule::Circuit(TArray<AActor*> targets) {
 }
 
 void AVehicule::OneWay(TArray<AActor*> targets) {
-	if (!reachedIsDestination) {
-		bool returnFunctionCircuit = Circuit(targets);
-		if (returnFunctionCircuit) {
+	if (!reachedIsDestination && circuitIndexToReach<targets.Num()) {
+		if (Circuit(targets)) {
 			reachedIsDestination = true;
 		}
 	}
 	else {
-		Arrival(targets[targets.Num() - 1], 1000);
+		VehiculeMovement(Arrival(targets[circuitIndexToReach], 5000));
 	}
 }
 
 
+void AVehicule::TwoWay(TArray<AActor*> targets) {
+	if (circuitIndexToReach < targets.Num()) {
+		if (circuitIndexToReach > -1) {
+			VehiculeMovement(seek(targets[circuitIndexToReach]));
+			if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 500) {
+				if (!twoWayReverseSens) circuitIndexToReach++;
+				else circuitIndexToReach--;
+			}
+		}
+		else {
+			circuitIndexToReach++;
+			twoWayReverseSens = false;
+		}
+	}
+	else {
+		circuitIndexToReach--;
+		twoWayReverseSens = true;
+	}
+}
