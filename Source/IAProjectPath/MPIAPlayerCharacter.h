@@ -15,6 +15,10 @@ public:
 	// Sets default values for this character's properties
 	AMPIAPlayerCharacter();
 
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<AActor> TargetToSpawn;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
