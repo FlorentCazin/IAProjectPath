@@ -112,7 +112,6 @@ FVector AVehicule::Arrival(AActor* target, float slowing_distance) {
 }
 
 bool AVehicule::Circuit(TArray<AActor*> targets) {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString(TEXT("index : %i"),circuitIndexToReach));
 	if (circuitIndexToReach < targets.Num()) {
 		VehiculeMovement(seek(targets[circuitIndexToReach]));
 		if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 500) {
@@ -128,12 +127,12 @@ bool AVehicule::Circuit(TArray<AActor*> targets) {
 }
 
 void AVehicule::OneWay(TArray<AActor*> targets) {
-	if (!reachedIsDestination && circuitIndexToReach<targets.Num()) {
+	if (!reachedIsDestination && targets.Num()>0 && circuitIndexToReach<targets.Num()) {
 		if (Circuit(targets)) {
 			reachedIsDestination = true;
 		}
 	}
-	else {
+	else if(targets.Num() > 0 && circuitIndexToReach < targets.Num()) {
 		VehiculeMovement(Arrival(targets[circuitIndexToReach], 5000));
 	}
 }

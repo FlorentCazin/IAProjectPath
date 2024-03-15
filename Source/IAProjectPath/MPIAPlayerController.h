@@ -19,39 +19,32 @@ public:
 	AMPIAPlayerController();
 
 	//Array of targets to go
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FVector> LocationArray;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TArray<FVector> LocationArray;
 
-	//OneWay mode
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool OneWayMod;
-
-	//OneWay mode
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool SeveralPointMod;
-
-	//Circuit mode
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CircuitMod;
+	TArray<AActor*> targetsSpawned;
 
 	AMPIAPlayerCharacter *Player;
 
+    //onepoint = 0, severalspoints = 1, circuit = 2
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int ModeChoosen;
+
+protected:
+	virtual void OnPossess(APawn* aPawn) override;
 	
 public:
 	UFUNCTION(BlueprintCallable)
 	FHitResult OnClickGetSingleLineTraceByChannel();
 
-	UFUNCTION(BlueprintCallable)
-	void SetOneWayMod();
-
-	UFUNCTION(BlueprintCallable)
-	void SetSeveralMod();
-
-	UFUNCTION(BlueprintCallable)
-	void SetCircuitMod();
+	
 
 	UFUNCTION(BlueprintCallable)
 	void SpawningItemToReach(FHitResult hit);
+
+	UFUNCTION(BlueprintCallable)
+	void ClickAction(FHitResult hit);
 };
 
 

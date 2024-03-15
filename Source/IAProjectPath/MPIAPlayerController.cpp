@@ -2,7 +2,10 @@
 
 
 #include "MPIAPlayerController.h"
+#include "ButtonGameMode.h"
 #include "LandscapeProxy.h"
+#include "ButtonStartStopGameMode.h"
+#include "MPIAGameMode.h"
 
 
 AMPIAPlayerController::AMPIAPlayerController() {
@@ -10,14 +13,13 @@ AMPIAPlayerController::AMPIAPlayerController() {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
-	OneWayMod = true;
-	SeveralPointMod = false;
-	CircuitMod = false;
-	Player = Cast<AMPIAPlayerCharacter>(GetPawn());
 }
 
 
-
+void AMPIAPlayerController::OnPossess(APawn* aPawn){
+	Super::OnPossess(aPawn);
+	Player = Cast<AMPIAPlayerCharacter>(aPawn);
+}
 
 FHitResult AMPIAPlayerController::OnClickGetSingleLineTraceByChannel() {
 	UWorld* World = GetWorld(); //world reference
@@ -47,28 +49,23 @@ FHitResult AMPIAPlayerController::OnClickGetSingleLineTraceByChannel() {
 	}
 }
 
-void AMPIAPlayerController::SetOneWayMod() {
-	OneWayMod = true;
-	SeveralPointMod = false;
-	CircuitMod = false;
+void AMPIAPlayerController::ClickAction(FHitResult hit) {
+	AMPIAGameMode* gamemode = Cast<AMPIAGameMode>(GetWorld()->GetAuthGameMode());
+	if (hit.IsValidBlockingHit() && hit.GetActor()->IsA<ALandscapeProxy>() && !gamemode->Started) { //spawn item
+		SpawningItemToReach(hit);
+	}
+	else if (hit.IsValidBlockingHit() && hit.GetActor()->IsA(AButtonGameMode::StaticClass()) && !gamemode->Started) { //switch Gamemode
+		AButtonGameMode* button = Cast<AButtonGameMode>(hit.GetActor());
+		button->SetGameMode();
+	}
+	else if (hit.IsValidBlockingHit() && hit.GetActor()->IsA(AButtonStartStopGameMode::StaticClass())) { //start / stop
+		AButtonStartStopGameMode* button = Cast<AButtonStartStopGameMode>(hit.GetActor());
+		button->OnClick();
+	}
 }
 
 
-void AMPIAPlayerController::SetSeveralMod() {
-	OneWayMod = false;
-	SeveralPointMod = true;
-	CircuitMod = false;
-}
-
-
-void AMPIAPlayerController::SetCircuitMod() {
-	OneWayMod = false;
-	SeveralPointMod = false;
-	CircuitMod = true;
-}
 
 void AMPIAPlayerController::SpawningItemToReach(FHitResult hit) {
-	if (hit.GetActor()->IsA(ALandscapeProxy)) {
-		GetWorld()->SpawnActor<AActor>(Player->TargetToSpawn, hit.ImpactPoint);
-	}
+	targetsSpawned.Add(GetWorld()->SpawnActor<AActor>(Player->TargetToSpawn, hit.ImpactPoint, FRotator::ZeroRotator));
 }
