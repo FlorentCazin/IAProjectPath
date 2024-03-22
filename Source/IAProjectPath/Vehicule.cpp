@@ -127,6 +127,7 @@ bool AVehicule::Circuit(TArray<AActor*> targets) {
 }
 
 void AVehicule::OneWay(TArray<AActor*> targets) {
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, FString::Printf(TEXT("%d"), targets.Num()));
 	if (!reachedIsDestination && targets.Num()>0 && circuitIndexToReach<targets.Num()) {
 		if (Circuit(targets)) {
 			reachedIsDestination = true;

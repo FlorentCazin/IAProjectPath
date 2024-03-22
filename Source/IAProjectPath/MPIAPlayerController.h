@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "MPIAPlayerCharacter.h"
+#include "MPIAGameMode.h"
 #include "MPIAPlayerController.generated.h"
 
 /**
@@ -30,6 +31,9 @@ public:
     //onepoint = 0, severalspoints = 1, circuit = 2
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ModeChoosen;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AMPIAGameMode* gamemode;
 
 protected:
 	virtual void OnPossess(APawn* aPawn) override;

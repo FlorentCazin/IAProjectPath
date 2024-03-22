@@ -5,7 +5,6 @@
 #include "ButtonGameMode.h"
 #include "LandscapeProxy.h"
 #include "ButtonStartStopGameMode.h"
-#include "MPIAGameMode.h"
 
 
 AMPIAPlayerController::AMPIAPlayerController() {
@@ -19,6 +18,7 @@ AMPIAPlayerController::AMPIAPlayerController() {
 void AMPIAPlayerController::OnPossess(APawn* aPawn){
 	Super::OnPossess(aPawn);
 	Player = Cast<AMPIAPlayerCharacter>(aPawn);
+	gamemode = Cast<AMPIAGameMode>(GetWorld()->GetAuthGameMode());
 }
 
 FHitResult AMPIAPlayerController::OnClickGetSingleLineTraceByChannel() {
@@ -50,7 +50,6 @@ FHitResult AMPIAPlayerController::OnClickGetSingleLineTraceByChannel() {
 }
 
 void AMPIAPlayerController::ClickAction(FHitResult hit) {
-	AMPIAGameMode* gamemode = Cast<AMPIAGameMode>(GetWorld()->GetAuthGameMode());
 	if (hit.IsValidBlockingHit() && hit.GetActor()->IsA<ALandscapeProxy>() && !gamemode->Started) { //spawn item
 		SpawningItemToReach(hit);
 	}
@@ -67,5 +66,13 @@ void AMPIAPlayerController::ClickAction(FHitResult hit) {
 
 
 void AMPIAPlayerController::SpawningItemToReach(FHitResult hit) {
-	targetsSpawned.Add(GetWorld()->SpawnActor<AActor>(Player->TargetToSpawn, hit.ImpactPoint, FRotator::ZeroRotator));
+	if(gamemode->OneWayMod){
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, FString::Printf(TEXT("%d"), targetsSpawned.Num()));
+		if (targetsSpawned.Num() < 1) {
+			targetsSpawned.Add(GetWorld()->SpawnActor<AActor>(Player->TargetToSpawn, hit.ImpactPoint, FRotator::ZeroRotator));
+		}
+	}
+	else {
+		targetsSpawned.Add(GetWorld()->SpawnActor<AActor>(Player->TargetToSpawn, hit.ImpactPoint, FRotator::ZeroRotator));
+	}
 }

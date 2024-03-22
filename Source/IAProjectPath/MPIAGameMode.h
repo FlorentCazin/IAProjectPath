@@ -33,6 +33,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool CircuitMod;
 
+	//Graph array
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TArray<tytpe> CircuitMod;
+
 public:
 
 	UFUNCTION(BlueprintCallable)

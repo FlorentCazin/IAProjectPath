@@ -30,6 +30,18 @@ void AButtonGameMode::Tick(float DeltaTime)
 void AButtonGameMode::SetGameMode() {
 	AMPIAPlayerController* controller = Cast<AMPIAPlayerController>(GetWorld()->GetFirstPlayerController());
 	AMPIAGameMode *gamemode = Cast<AMPIAGameMode>(GetWorld()->GetAuthGameMode());
+
+	//delete targets already spawned
+	if (controller) {
+		for (AActor* a : controller->targetsSpawned) {
+			if (a) {
+				controller->targetsSpawned.Remove(a);
+				a->Destroy();
+				controller->targetsSpawned.Shrink(); //reduce the array size
+			}
+		}
+	}
+
 	if (name.Equals("OnePoint")) {
 		gamemode->SetOneWayMod();
 		controller->ModeChoosen = 0;

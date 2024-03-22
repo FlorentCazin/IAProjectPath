@@ -30,14 +30,21 @@ void AButtonStartStopGameMode::OnClick() {
 	AMPIAPlayerController *controller = Cast<AMPIAPlayerController>(GetWorld()->GetFirstPlayerController());
 	// pas oublier les checks de si start et ya rien etc pas nullptr si necessaire
 	if (gamemode->Started) { //then stop
-		for (AActor* a : controller->targetsSpawned) {
-			a->Destroy();
+		if (controller) {
+			for (AActor* a : controller->targetsSpawned) {
+				if (a) {
+					controller->targetsSpawned.Remove(a);
+					a->Destroy();
+					controller->targetsSpawned.Shrink(); //reduce the array size
+				}
+			}
 		}
 		gamemode->Started = false;
 	}
 	else { //then start
 		gamemode->Started = true;
 	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, gamemode->Started?TEXT("Started"):TEXT("Not Started"));
 }
 
 //tableau 1 2 3 pour graph exemple: ou faire autrement (noeudsattachés...)
