@@ -36,13 +36,13 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 	TArray<AActor*> resultNodes;
 
 	//if begining node is not null
-	if (beginingGraphNode) {
+	if (beginingGraphNode && targetGraphNode) {
 		openList.Add(beginingGraphNode);
 	}
 	else return resultNodes;
 
 	//Actual node
-	AGraphNode* ActualNode = beginingGraphNode;
+	AGraphNode* ActualNode = openList[0];
 
 	while(ActualNode){ // && ActualNode != targetGraphNode OU mettre if(ActualNode != targetGraphNode) alors
 
@@ -81,8 +81,11 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 
 	//Recupere tout les predecesseur jusqu'au nullptr (begining donc) pour recuperer le chemin le plus cour
 	ActualNode = targetGraphNode;
-	while (ActualNode != beginingGraphNode) { //tant que ya un predeceseur
-		resultNodes.Insert(ActualNode->predeceseur, 0);
+	while (ActualNode) { //tant que ya un predeceseur
+		if (ActualNode->predeceseur) {
+			resultNodes.Insert(ActualNode->predeceseur, 0);
+		}
+		ActualNode = ActualNode->predeceseur;
 	}
 	return resultNodes;
 	
