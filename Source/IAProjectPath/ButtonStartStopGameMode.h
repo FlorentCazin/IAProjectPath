@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GraphNode.h"
 #include "ButtonStartStopGameMode.generated.h"
 
 UCLASS()
@@ -14,6 +15,9 @@ class IAPROJECTPATH_API AButtonStartStopGameMode : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AButtonStartStopGameMode();
+
+	TArray<AGraphNode*> arrayGraphNodes;
+
 
 protected:
 	// Called when the game starts or when spawned

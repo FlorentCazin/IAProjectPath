@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GraphNode.h"
 #include "Vehicule.generated.h"
 
 UCLASS(Blueprintable)
@@ -32,6 +33,12 @@ public:
 	int circuitIndexToReach;
 	bool reachedIsDestination;
 	bool twoWayReverseSens;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<AActor*> newArrayTargets;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AGraphNode* ClosestGraphNode;
 
 protected:
 	// Called when the game starts or when spawned

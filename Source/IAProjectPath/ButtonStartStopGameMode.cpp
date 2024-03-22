@@ -4,6 +4,8 @@
 #include "MPIAPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Vehicule.h"
+#include "Graph.h"
+#include "GraphNode.h"
 #include "MPIAGameMode.h"
 
 // Sets default values
@@ -17,7 +19,14 @@ AButtonStartStopGameMode::AButtonStartStopGameMode()
 void AButtonStartStopGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	TArray<AActor*> tmp;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGraphNode::StaticClass(), tmp);
+
+	for (auto& n : tmp) {
+		AGraphNode* node = Cast<AGraphNode>(n);
+		arrayGraphNodes.Add(node);
+	}
 }
 
 // Called every frame
@@ -53,6 +62,23 @@ void AButtonStartStopGameMode::OnClick() {
 		}
 	}
 	else { //then start
+
+		//new array with new points
+		/*
+		if (controller) {
+			AGraph * graph = Cast<AGraph>(UGameplayStatics::GetActorOfClass(GetWorld(), AGraph::StaticClass()));
+			TArray<AActor*> newArray;
+
+			for (int i = 0; i < controller->targetsSpawned.Num(); i++) {
+				graph->AStar()
+			}
+			//AStar entre ou je suis close point graph et p1
+			//[graph point],closeP1, p1
+
+		}*/
+
+
+
 		gamemode->Started = true;
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, gamemode->Started?TEXT("Started"):TEXT("Not Started"));
