@@ -35,6 +35,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AMPIAGameMode* gamemode;
 
+	bool onewaymodalreadyspawned;
+
 protected:
 	virtual void OnPossess(APawn* aPawn) override;
 	

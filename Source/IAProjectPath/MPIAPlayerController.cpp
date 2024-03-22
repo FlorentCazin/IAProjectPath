@@ -68,8 +68,9 @@ void AMPIAPlayerController::ClickAction(FHitResult hit) {
 void AMPIAPlayerController::SpawningItemToReach(FHitResult hit) {
 	if(gamemode->OneWayMod){
 		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, FString::Printf(TEXT("%d"), targetsSpawned.Num()));
-		if (targetsSpawned.Num() < 1) {
+		if (!onewaymodalreadyspawned) {
 			targetsSpawned.Add(GetWorld()->SpawnActor<AActor>(Player->TargetToSpawn, hit.ImpactPoint, FRotator::ZeroRotator));
+			onewaymodalreadyspawned = true;
 		}
 	}
 	else {

@@ -32,6 +32,7 @@ void AButtonGameMode::SetGameMode() {
 	AMPIAGameMode *gamemode = Cast<AMPIAGameMode>(GetWorld()->GetAuthGameMode());
 
 	//delete targets already spawned
+	/*
 	if (controller) {
 		for (AActor* a : controller->targetsSpawned) {
 			if (a) {
@@ -41,6 +42,7 @@ void AButtonGameMode::SetGameMode() {
 			}
 		}
 	}
+	*/
 
 	if (name.Equals("OnePoint")) {
 		gamemode->SetOneWayMod();

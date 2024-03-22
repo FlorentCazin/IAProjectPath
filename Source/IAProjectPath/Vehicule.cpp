@@ -77,9 +77,12 @@ void AVehicule::VehiculeOrientation() {
 }
 
 FVector AVehicule::seek(AActor *target) {
-	FVector targetPosition = target->GetActorLocation();
-	FVector desired_velocity = (targetPosition - position).GetSafeNormal() * max_speed;
-	return desired_velocity - velocity;
+	if (target) {
+		FVector targetPosition = target->GetActorLocation();
+		FVector desired_velocity = (targetPosition - position).GetSafeNormal() * max_speed;
+		return desired_velocity - velocity;
+	}
+	return FVector::Zero();
 }
 
 //force->kg/m calculer en cm/s
@@ -102,23 +105,31 @@ FVector AVehicule::Pursuit(AVehicule* target, float turningParameter) {
 }
 
 FVector AVehicule::Arrival(AActor* target, float slowing_distance) {
-	FVector targetPosition = target->GetActorLocation();
-	FVector target_offset = targetPosition - position;
-	float distance = target_offset.Size();
-	float ramped_speed = max_speed * (distance / slowing_distance);
-	float clipped_speed = FMath::Min(ramped_speed, max_speed);
-	FVector desired_velocity = (clipped_speed / distance) * target_offset;
-	return desired_velocity - velocity;
+	if (target) {
+		FVector targetPosition = target->GetActorLocation();
+		FVector target_offset = targetPosition - position;
+		float distance = target_offset.Size();
+		float ramped_speed = max_speed * (distance / slowing_distance);
+		float clipped_speed = FMath::Min(ramped_speed, max_speed);
+		FVector desired_velocity = (clipped_speed / distance) * target_offset;
+		return desired_velocity - velocity;
+	}
+	else return FVector::Zero();
+		
 }
 
 bool AVehicule::Circuit(TArray<AActor*> targets) {
 	if (circuitIndexToReach < targets.Num()) {
-		VehiculeMovement(seek(targets[circuitIndexToReach]));
-		if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 500) {
-			circuitIndexToReach++;
+		if (targets[circuitIndexToReach]) {
+			VehiculeMovement(seek(targets[circuitIndexToReach]));
+			if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 500) {
+				circuitIndexToReach++;
+			}
+			//return false;
+			if (circuitIndexToReach == targets.Num() - 1) return true;
+			else return false;
 		}
-		if (circuitIndexToReach == targets.Num() - 1) return true;
-		else return false;
+		return false;
 	}
 	else {
 		circuitIndexToReach = 0;
@@ -127,16 +138,27 @@ bool AVehicule::Circuit(TArray<AActor*> targets) {
 }
 
 void AVehicule::OneWay(TArray<AActor*> targets) {
+	if (targets.Num()>0) {
+		VehiculeMovement(Arrival(targets[circuitIndexToReach], 5000));
+	}
+}
+
+void AVehicule::SeveralPoints(TArray<AActor*> targets) {
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, FString::Printf(TEXT("%d"), targets.Num()));
-	if (!reachedIsDestination && targets.Num()>0 && circuitIndexToReach<targets.Num()) {
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, reachedIsDestination?TEXT("DESTINATION REACHED"):TEXT("DESTINATION NOT REACHED"));
+
+	if (!reachedIsDestination && targets.Num()>0) {
 		if (Circuit(targets)) {
 			reachedIsDestination = true;
 		}
 	}
-	else if(targets.Num() > 0 && circuitIndexToReach < targets.Num()) {
-		VehiculeMovement(Arrival(targets[circuitIndexToReach], 5000));
+	else {
+		if (targets.Num()>0 && targets[targets.Num() - 1]) {
+			VehiculeMovement(Arrival(targets[targets.Num() - 1], 5000));
+		}
 	}
 }
+
 
 
 void AVehicule::TwoWay(TArray<AActor*> targets) {

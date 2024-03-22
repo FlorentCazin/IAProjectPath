@@ -2,6 +2,8 @@
 
 #include "ButtonStartStopGameMode.h"
 #include "MPIAPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Vehicule.h"
 #include "MPIAGameMode.h"
 
 // Sets default values
@@ -28,18 +30,27 @@ void AButtonStartStopGameMode::Tick(float DeltaTime)
 void AButtonStartStopGameMode::OnClick() {
 	AMPIAGameMode* gamemode = Cast<AMPIAGameMode>(GetWorld()->GetAuthGameMode());
 	AMPIAPlayerController *controller = Cast<AMPIAPlayerController>(GetWorld()->GetFirstPlayerController());
+	TArray<AActor*> vehicules;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVehicule::StaticClass(), vehicules);
 	// pas oublier les checks de si start et ya rien etc pas nullptr si necessaire
 	if (gamemode->Started) { //then stop
 		if (controller) {
 			for (AActor* a : controller->targetsSpawned) {
-				if (a) {
-					controller->targetsSpawned.Remove(a);
+				if (a->IsValidLowLevel()) {
+					//controller->targetsSpawned.Remove(a);
 					a->Destroy();
 					controller->targetsSpawned.Shrink(); //reduce the array size
+					controller->onewaymodalreadyspawned = false;
 				}
 			}
 		}
 		gamemode->Started = false;
+
+		for (auto &v : vehicules) {
+			AVehicule *vehicule = Cast<AVehicule>(v);
+			vehicule->circuitIndexToReach = 0;
+			vehicule->reachedIsDestination = false;
+		}
 	}
 	else { //then start
 		gamemode->Started = true;

@@ -74,4 +74,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
 	void TwoWay(TArray<AActor*> targets);
 
+	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
+	void SeveralPoints(TArray<AActor*> targets);
+
+
 };
