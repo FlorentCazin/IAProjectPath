@@ -15,6 +15,9 @@ AGraphNode::AGraphNode()
 void AGraphNode::BeginPlay()
 {
 	Super::BeginPlay();
+	for (auto& node : links) {
+		DrawDebugLine(GetWorld(), GetActorLocation(), node->GetActorLocation(), FColor::White, true);
+	}
 	
 }
 
