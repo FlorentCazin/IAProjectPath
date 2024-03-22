@@ -58,6 +58,7 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 		else {
 			//Neighboors exploration
 			for (int i = 0; i < ActualNode->links.Num(); i++) {
+				GEngine->AddOnScreenDebugMessage(-1,2.f,FColor::Blue,TEXT("inside for"));
 				//actual cost + cost between acutalnode and neighboor
 				//check if already visited or lowest cost
 				float ActualCostNeigboor = ActualNode->FCost + ActualNode->distanceBetweenLinks[i];
@@ -65,6 +66,7 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 					ActualNode->links[i]->FCost = ActualCostNeigboor;
 					ActualNode->links[i]->predeceseur = ActualNode;
 					ActualNode->links[i]->AlreadyVisited = true;
+					openList.Add(ActualNode->links[i]);
 				}
 			}
 
@@ -81,10 +83,8 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 
 	//Recupere tout les predecesseur jusqu'au nullptr (begining donc) pour recuperer le chemin le plus cour
 	ActualNode = targetGraphNode;
-	while (ActualNode) { //tant que ya un predeceseur
-		if (ActualNode->predeceseur) {
-			resultNodes.Insert(ActualNode->predeceseur, 0);
-		}
+	while (ActualNode->predeceseur && ActualNode->predeceseur != beginingGraphNode) { //tant que ya un predeceseur
+		resultNodes.Insert(ActualNode->predeceseur, 0);
 		ActualNode = ActualNode->predeceseur;
 	}
 	return resultNodes;

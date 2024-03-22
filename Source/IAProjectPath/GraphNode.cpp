@@ -17,7 +17,7 @@ void AGraphNode::BeginPlay()
 	Super::BeginPlay();
 	for (auto& node : links) {
 		//not optimized ²..
-		distanceBetweenLinks.Add(GetActorLocation().Size() - node->GetActorLocation().Size());
+		distanceBetweenLinks.Add((GetActorLocation() - node->GetActorLocation()).Size());
 		DrawDebugLine(GetWorld(), GetActorLocation(), node->GetActorLocation(), FColor::White, true);
 	}
 	
