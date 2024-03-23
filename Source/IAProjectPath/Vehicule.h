@@ -84,5 +84,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AlgoDeplacement")
 	void SeveralPoints(TArray<AActor*> targets);
 
+	UFUNCTION(BlueprintCallable, Category = "graph new array")
+	TArray<AActor*> GraphPointsArray();
+
 
 };

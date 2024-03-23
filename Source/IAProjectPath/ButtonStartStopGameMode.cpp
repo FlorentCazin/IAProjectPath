@@ -6,6 +6,7 @@
 #include "Vehicule.h"
 #include "Graph.h"
 #include "GraphNode.h"
+#include "PlayerTargetToSpawn.h"
 #include "MPIAGameMode.h"
 
 // Sets default values
@@ -62,23 +63,10 @@ void AButtonStartStopGameMode::OnClick() {
 		}
 	}
 	else { //then start
-
-		//new array with new points
-		/*
-		if (controller) {
-			AGraph * graph = Cast<AGraph>(UGameplayStatics::GetActorOfClass(GetWorld(), AGraph::StaticClass()));
-			TArray<AActor*> newArray;
-
-			for (int i = 0; i < controller->targetsSpawned.Num(); i++) {
-				graph->AStar()
-			}
-			//AStar entre ou je suis close point graph et p1
-			//[graph point],closeP1, p1
-
-		}*/
-
-
-
+		for (auto& v : vehicules) {
+			AVehicule* vehicule = Cast<AVehicule>(v);
+			vehicule->GraphPointsArray();
+		}
 		gamemode->Started = true;
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, gamemode->Started?TEXT("Started"):TEXT("Not Started"));

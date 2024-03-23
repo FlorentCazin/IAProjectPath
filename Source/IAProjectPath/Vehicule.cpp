@@ -2,6 +2,12 @@
 
 
 #include "Vehicule.h"
+#include "MPIAGameMode.h"
+#include "MPIAPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Graph.h"
+#include "GraphNode.h"
+#include "PlayerTargetToSpawn.h"
 
 // Sets default values
 AVehicule::AVehicule()
@@ -138,9 +144,10 @@ bool AVehicule::Circuit(TArray<AActor*> targets) {
 }
 
 void AVehicule::OneWay(TArray<AActor*> targets) {
-	if (targets.Num()>0) {
+	/*if (targets.Num()>0) {
 		VehiculeMovement(Arrival(targets[circuitIndexToReach], 5000));
-	}
+	}*/
+	SeveralPoints(targets);
 }
 
 void AVehicule::SeveralPoints(TArray<AActor*> targets) {
@@ -179,4 +186,66 @@ void AVehicule::TwoWay(TArray<AActor*> targets) {
 		circuitIndexToReach--;
 		twoWayReverseSens = true;
 	}
+}
+
+
+TArray<AActor*> AVehicule::GraphPointsArray() {
+	//new array with new points
+	AMPIAGameMode* gamemode = Cast<AMPIAGameMode>(GetWorld()->GetAuthGameMode());
+	AMPIAPlayerController* controller = Cast<AMPIAPlayerController>(GetWorld()->GetFirstPlayerController());
+	//final array
+	TArray<AActor*> finalArray;
+
+	if (controller) {
+		//save previous node (first is vehicule ClosestGraphNode)
+		AGraphNode* previousClosestNode = ClosestGraphNode;
+
+		//get graph to access A* method
+		AGraph* graph = Cast<AGraph>(UGameplayStatics::GetActorOfClass(GetWorld(), AGraph::StaticClass()));
+
+
+		//Knowing the actual closest node from the vehicule
+		TArray<AActor*> tmp;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGraphNode::StaticClass(), tmp);
+
+		for (auto& n : tmp) {
+			AGraphNode* node = Cast<AGraphNode>(n);
+			if (!ClosestGraphNode) {
+				ClosestGraphNode = node;
+			}
+			else {
+				float oldDistance = (GetActorLocation() - ClosestGraphNode->GetActorLocation()).Size();
+				float newDistance = (GetActorLocation() - node->GetActorLocation()).Size();
+				if (oldDistance > newDistance) {
+					ClosestGraphNode = node;
+				}
+			}
+		}
+
+		//new array
+		TArray<AActor*> tmpArray;
+
+		//for each targets spawned by the player
+		for (int i = 0; i < controller->targetsSpawned.Num(); i++) {
+			APlayerTargetToSpawn* target = Cast<APlayerTargetToSpawn>(controller->targetsSpawned[i]);
+
+			//A* vehicule ClosestGraphNode, target ClosestGraphNode
+			tmpArray = graph->AStar(previousClosestNode, target->ClosestGraphNode);
+			
+			//add graph nodes
+			for (auto& n : tmpArray) {
+				finalArray.Add(n);
+			}
+			//Add the target
+			finalArray.Add(controller->targetsSpawned[i]);
+			//save target->ClosestGraphNode
+			previousClosestNode = target->ClosestGraphNode;
+		}
+		newArrayTargets = finalArray;
+		return finalArray;
+
+		//SI ON REPASSE JAMAIS PAR LE MEME POINT, VERIF QUE target->ClosestGraphNode nexiste pas deja avant de lajouter dans tableau? evite peut etre leffet de demi tour mais peut coser probleme?
+	}
+	newArrayTargets = finalArray;
+	return finalArray;
 }

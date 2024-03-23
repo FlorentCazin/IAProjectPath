@@ -32,6 +32,7 @@ void AGraph::Tick(float DeltaTime)
 
 }
 
+//return tout les noeuds entre begining et target compris
 TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetGraphNode) {
 	TArray<AActor*> resultNodes;
 
@@ -83,10 +84,12 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 
 	//Recupere tout les predecesseur jusqu'au nullptr (begining donc) pour recuperer le chemin le plus cour
 	ActualNode = targetGraphNode;
+	resultNodes.Insert(targetGraphNode,0);
 	while (ActualNode->predeceseur && ActualNode->predeceseur != beginingGraphNode) { //tant que ya un predeceseur
 		resultNodes.Insert(ActualNode->predeceseur, 0);
 		ActualNode = ActualNode->predeceseur;
 	}
+	resultNodes.Insert(beginingGraphNode, 0);
 	return resultNodes;
 	
 
