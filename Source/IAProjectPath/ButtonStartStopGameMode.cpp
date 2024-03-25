@@ -42,6 +42,7 @@ void AButtonStartStopGameMode::OnClick() {
 	AMPIAPlayerController *controller = Cast<AMPIAPlayerController>(GetWorld()->GetFirstPlayerController());
 	TArray<AActor*> vehicules;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVehicule::StaticClass(), vehicules);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("size taregtscontroller : %d"), controller->targetsSpawned.Num()));
 	// pas oublier les checks de si start et ya rien etc pas nullptr si necessaire
 	if (gamemode->Started) { //then stop
 		if (controller) {
@@ -49,10 +50,11 @@ void AButtonStartStopGameMode::OnClick() {
 				if (a->IsValidLowLevel()) {
 					//controller->targetsSpawned.Remove(a);
 					a->Destroy();
-					controller->targetsSpawned.Shrink(); //reduce the array size
+					//controller->targetsSpawned.Shrink(); //reduce the array size
 					controller->onewaymodalreadyspawned = false;
 				}
 			}
+			controller->targetsSpawned.Reset();
 		}
 		gamemode->Started = false;
 
@@ -60,11 +62,17 @@ void AButtonStartStopGameMode::OnClick() {
 			AVehicule *vehicule = Cast<AVehicule>(v);
 			vehicule->circuitIndexToReach = 0;
 			vehicule->reachedIsDestination = false;
+			vehicule->ClosestGraphNode = nullptr;
+			//reset array
+			vehicule->newArrayTargets.Reset();
+			//Shrink()?
+			//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("size : %d"), vehicule->newArrayTargets.Num()));
 		}
 	}
 	else { //then start
 		for (auto& v : vehicules) {
 			AVehicule* vehicule = Cast<AVehicule>(v);
+			//if vehicule target.num > 0
 			vehicule->GraphPointsArray();
 		}
 		gamemode->Started = true;

@@ -151,8 +151,8 @@ void AVehicule::OneWay(TArray<AActor*> targets) {
 }
 
 void AVehicule::SeveralPoints(TArray<AActor*> targets) {
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, FString::Printf(TEXT("%d"), targets.Num()));
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, reachedIsDestination?TEXT("DESTINATION REACHED"):TEXT("DESTINATION NOT REACHED"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, FString::Printf(TEXT("%d"), targets.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, reachedIsDestination?TEXT("DESTINATION REACHED"):TEXT("DESTINATION NOT REACHED"));
 
 	if (!reachedIsDestination && targets.Num()>0) {
 		if (Circuit(targets)) {
@@ -197,8 +197,7 @@ TArray<AActor*> AVehicule::GraphPointsArray() {
 	TArray<AActor*> finalArray;
 
 	if (controller) {
-		//save previous node (first is vehicule ClosestGraphNode)
-		AGraphNode* previousClosestNode = ClosestGraphNode;
+		
 
 		//get graph to access A* method
 		AGraph* graph = Cast<AGraph>(UGameplayStatics::GetActorOfClass(GetWorld(), AGraph::StaticClass()));
@@ -222,12 +221,21 @@ TArray<AActor*> AVehicule::GraphPointsArray() {
 			}
 		}
 
+		//save previous node (first is vehicule ClosestGraphNode)
+		AGraphNode* previousClosestNode = ClosestGraphNode;
+
 		//new array
 		TArray<AActor*> tmpArray;
 
 		//for each targets spawned by the player
 		for (int i = 0; i < controller->targetsSpawned.Num(); i++) {
 			APlayerTargetToSpawn* target = Cast<APlayerTargetToSpawn>(controller->targetsSpawned[i]);
+
+			if (!target) {
+				UE_LOG(LogTemp, Warning, TEXT("Target is null vehicule GraphPointsArray"));
+				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, TEXT("Target is null vehicule GraphPointsArray"));
+				return finalArray;
+			}
 
 			//A* vehicule ClosestGraphNode, target ClosestGraphNode
 			tmpArray = graph->AStar(previousClosestNode, target->ClosestGraphNode);
