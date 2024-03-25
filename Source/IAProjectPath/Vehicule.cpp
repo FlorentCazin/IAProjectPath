@@ -143,7 +143,7 @@ TArray<AActor*> AVehicule::RemakeCircuitArray(TArray<AActor*> targets) {
 		if (targetFinalToSpawn != targetBeginToSpawn) {
 			TArray<AActor*> tmp = graph->AStar(targetFinalToSpawn->ClosestGraphNode, targetBeginToSpawn->ClosestGraphNode);
 			for (auto& elem : tmp) {
-				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, elem->GetName());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, elem->GetName());
 				tmpActor.Add(elem);
 			}
 			return tmpActor;
@@ -278,7 +278,7 @@ TArray<AActor*> AVehicule::GraphPointsArray() {
 
 			if (!target) {
 				UE_LOG(LogTemp, Warning, TEXT("Target is null vehicule GraphPointsArray"));
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, TEXT("Target is null vehicule GraphPointsArray"));
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, TEXT("Target is null vehicule GraphPointsArray"));
 				return finalArray;
 			}
 

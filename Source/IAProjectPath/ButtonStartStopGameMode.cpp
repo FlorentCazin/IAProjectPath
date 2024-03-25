@@ -42,7 +42,7 @@ void AButtonStartStopGameMode::OnClick() {
 	AMPIAPlayerController *controller = Cast<AMPIAPlayerController>(GetWorld()->GetFirstPlayerController());
 	TArray<AActor*> vehicules;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVehicule::StaticClass(), vehicules);
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("size taregtscontroller : %d"), controller->targetsSpawned.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("size taregtscontroller : %d"), controller->targetsSpawned.Num()));
 	// pas oublier les checks de si start et ya rien etc pas nullptr si necessaire
 	if (gamemode->Started) { //then stop
 		if (controller) {
@@ -65,7 +65,6 @@ void AButtonStartStopGameMode::OnClick() {
 			vehicule->needresizeforcircuit = true;
 			//reset array
 			vehicule->newArrayTargets.Reset();
-			//Shrink()?
 		}
 	}
 	else { //then start
@@ -76,6 +75,6 @@ void AButtonStartStopGameMode::OnClick() {
 		}
 		gamemode->Started = true;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, gamemode->Started?TEXT("Started"):TEXT("Not Started"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, gamemode->Started?TEXT("Started"):TEXT("Not Started"));
 }
 
