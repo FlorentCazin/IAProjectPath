@@ -40,6 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AGraphNode* ClosestGraphNode;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool needresizeforcircuit = true;
 
 
