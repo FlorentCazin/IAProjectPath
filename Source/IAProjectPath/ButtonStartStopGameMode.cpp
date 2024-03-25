@@ -62,7 +62,7 @@ void AButtonStartStopGameMode::OnClick() {
 			vehicule->circuitIndexToReach = 0;
 			vehicule->reachedIsDestination = false;
 			vehicule->ClosestGraphNode = nullptr;
-			vehicule->needresizeforcircuit = false;
+			vehicule->needresizeforcircuit = true;
 			//reset array
 			vehicule->newArrayTargets.Reset();
 			//Shrink()?

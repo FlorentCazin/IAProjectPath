@@ -125,31 +125,35 @@ FVector AVehicule::Arrival(AActor* target, float slowing_distance) {
 }
 
 TArray<AActor*> AVehicule::RemakeCircuitArray(TArray<AActor*> targets) {
-	if (needresizeforcircuit) {
+	TArray<AActor*> tmpActor = targets;
+	if (needresizeforcircuit && targets.Num()>0) {
+		needresizeforcircuit = false;
 		int targetIndex = 0;
 		for (int i = 0; i < targets.Num(); i++) {
 			APlayerTargetToSpawn* target = Cast<APlayerTargetToSpawn>(targets[i]);
 			if (target) {
 				targetIndex = i;
+				break;
 			}
 		}
 		AGraph* graph = Cast<AGraph>(UGameplayStatics::GetActorOfClass(GetWorld(), AGraph::StaticClass()));
-		APlayerTargetToSpawn* targetFinalToSpawn = Cast<APlayerTargetToSpawn>(targets[targets.Num()]);
+		APlayerTargetToSpawn* targetFinalToSpawn = Cast<APlayerTargetToSpawn>(targets[targets.Num()-1]);
 		APlayerTargetToSpawn* targetBeginToSpawn = Cast<APlayerTargetToSpawn>(targets[targetIndex]);
 
 		if (targetFinalToSpawn != targetBeginToSpawn) {
 			TArray<AActor*> tmp = graph->AStar(targetFinalToSpawn->ClosestGraphNode, targetBeginToSpawn->ClosestGraphNode);
 			for (auto& elem : tmp) {
-				targets.Add(elem);
+				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, elem->GetName());
+				tmpActor.Add(elem);
 			}
-			return targets;
+			return tmpActor;
 		}
 		else {
-			return targets;
+			return tmpActor;
 		}
 	}
 	else {
-		return targets;
+		return tmpActor;
 	}
 	
 
