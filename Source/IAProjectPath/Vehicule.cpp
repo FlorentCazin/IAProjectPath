@@ -144,18 +144,9 @@ bool AVehicule::Circuit(TArray<AActor*> targets) {
 			APlayerTargetToSpawn* target = Cast<APlayerTargetToSpawn>(targets[i]);
 			if (target) {
 				circuitIndexToReach = i;
-
-
-
-
-
-
-
-
 				return false;
 			}
 		}
-
 		circuitIndexToReach = 0;
 		return false;
 	}
