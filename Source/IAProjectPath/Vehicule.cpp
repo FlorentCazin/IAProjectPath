@@ -124,6 +124,38 @@ FVector AVehicule::Arrival(AActor* target, float slowing_distance) {
 		
 }
 
+TArray<AActor*> AVehicule::RemakeCircuitArray(TArray<AActor*> targets) {
+	if (needresizeforcircuit) {
+		int targetIndex = 0;
+		for (int i = 0; i < targets.Num(); i++) {
+			APlayerTargetToSpawn* target = Cast<APlayerTargetToSpawn>(targets[i]);
+			if (target) {
+				targetIndex = i;
+			}
+		}
+		AGraph* graph = Cast<AGraph>(UGameplayStatics::GetActorOfClass(GetWorld(), AGraph::StaticClass()));
+		APlayerTargetToSpawn* targetFinalToSpawn = Cast<APlayerTargetToSpawn>(targets[targets.Num()]);
+		APlayerTargetToSpawn* targetBeginToSpawn = Cast<APlayerTargetToSpawn>(targets[targetIndex]);
+
+		if (targetFinalToSpawn != targetBeginToSpawn) {
+			TArray<AActor*> tmp = graph->AStar(targetFinalToSpawn->ClosestGraphNode, targetBeginToSpawn->ClosestGraphNode);
+			for (auto& elem : tmp) {
+				targets.Add(elem);
+			}
+			return targets;
+		}
+		else {
+			return targets;
+		}
+	}
+	else {
+		return targets;
+	}
+	
+
+
+}
+
 bool AVehicule::Circuit(TArray<AActor*> targets) {
 	if (circuitIndexToReach < targets.Num()) {
 		if (targets[circuitIndexToReach]) {

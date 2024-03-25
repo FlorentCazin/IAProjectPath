@@ -40,6 +40,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AGraphNode* ClosestGraphNode;
 
+	bool needresizeforcircuit = true;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -86,6 +89,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "graph new array")
 	TArray<AActor*> GraphPointsArray();
+
+	UFUNCTION(BlueprintCallable, Category = "new array circuit")
+	TArray<AActor*> RemakeCircuitArray(TArray<AActor*> targets);
+
 
 
 };
