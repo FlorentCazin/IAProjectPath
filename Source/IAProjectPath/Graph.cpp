@@ -32,15 +32,29 @@ void AGraph::Tick(float DeltaTime)
 
 }
 
+void AGraph::ResetValueNodes() {
+	for (AGraphNode* node : NodesInGraph) {
+		node->AlreadyVisited = false;
+		node->predeceseur = nullptr;
+		node->FCost = 0.f;
+	}
+}
+
 //return tout les noeuds entre begining et target compris
 TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetGraphNode) {
+
+
+
 	TArray<AActor*> resultNodes;
 
 	//if begining node is not null
 	if (beginingGraphNode && targetGraphNode) {
 		openList.Add(beginingGraphNode);
 	}
-	else return resultNodes;
+	else {
+		ResetValueNodes();
+		return resultNodes;
+	}
 
 	//Actual node
 	AGraphNode* ActualNode = openList[0];
@@ -59,7 +73,6 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 		else {
 			//Neighboors exploration
 			for (int i = 0; i < ActualNode->links.Num(); i++) {
-				//GEngine->AddOnScreenDebugMessage(-1,2.f,FColor::Blue,TEXT("inside for"));
 				//actual cost + cost between acutalnode and neighboor
 				//check if already visited or lowest cost
 				float ActualCostNeigboor = ActualNode->FCost + ActualNode->distanceBetweenLinks[i];
@@ -86,53 +99,14 @@ TArray<AActor*> AGraph::AStar(AGraphNode *beginingGraphNode, AGraphNode *targetG
 	ActualNode = targetGraphNode;
 	resultNodes.Insert(targetGraphNode,0);
 
-	/*for (int i = 0; i < 20; i++) {
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("i"));
-		if (ActualNode->predeceseur == beginingGraphNode) break;
-		else {
-			resultNodes.Insert(ActualNode->predeceseur, 0);
-			ActualNode = ActualNode->predeceseur;
-		}
-	}*/
-
 	while (ActualNode != beginingGraphNode) { //tant que ya un predeceseur
 		resultNodes.Insert(ActualNode->predeceseur, 0);
 		ActualNode = ActualNode->predeceseur;
 	}
 	resultNodes.Insert(beginingGraphNode, 0);
 
-	//for (int i = 0; i < resultNodes.Num(); i++) {
-		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, resultNodes[i]->GetName());
-	//}
+	ResetValueNodes();
 	return resultNodes;
-	
-
-
-
-	/*
-	float lowestCost = 0.f;
-	AGraphNode AcutalCost; //Lowest cost of the openList
-
-	
-
-
-	//tant que la liste ouverte n'est pas vide
-	while (openList.Num() > 0) {
-
-		for (AGraphNode* n : openList) {
-
-		}
-
-	}
-	*/
-
-
-	//reintialiser les valeurs des nodes? ou pas utiles?
-
-
-
-
-
 
 }
 

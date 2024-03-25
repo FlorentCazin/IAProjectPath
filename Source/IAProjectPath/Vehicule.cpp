@@ -251,8 +251,6 @@ TArray<AActor*> AVehicule::GraphPointsArray() {
 		}
 		newArrayTargets = finalArray;
 		return finalArray;
-
-		//SI ON REPASSE JAMAIS PAR LE MEME POINT, VERIF QUE target->ClosestGraphNode nexiste pas deja avant de lajouter dans tableau? evite peut etre leffet de demi tour mais peut coser probleme?
 	}
 	newArrayTargets = finalArray;
 	return finalArray;

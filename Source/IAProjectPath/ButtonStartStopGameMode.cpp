@@ -48,7 +48,6 @@ void AButtonStartStopGameMode::OnClick() {
 		if (controller) {
 			for (AActor* a : controller->targetsSpawned) {
 				if (a->IsValidLowLevel()) {
-					//controller->targetsSpawned.Remove(a);
 					a->Destroy();
 					//controller->targetsSpawned.Shrink(); //reduce the array size
 					controller->onewaymodalreadyspawned = false;
@@ -66,7 +65,6 @@ void AButtonStartStopGameMode::OnClick() {
 			//reset array
 			vehicule->newArrayTargets.Reset();
 			//Shrink()?
-			//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("size : %d"), vehicule->newArrayTargets.Num()));
 		}
 	}
 	else { //then start
@@ -79,9 +77,4 @@ void AButtonStartStopGameMode::OnClick() {
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, gamemode->Started?TEXT("Started"):TEXT("Not Started"));
 }
-
-//tableau 1 2 3 pour graph exemple: ou faire autrement (noeudsattachés...)
-//	 1    1 1 0
-//   2    1 1 1
-//   3    0 1 1
 

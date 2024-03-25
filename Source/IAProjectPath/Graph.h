@@ -25,6 +25,9 @@ public:
 	//contient les noeuds qui sont concidérés comme faisant parti du chemin solution (doit passer par la liste ouverte avant de venir ici)
 	TArray<AGraphNode*> closeList;
 
+	void ResetValueNodes();
+
+
 
 protected:
 	// Called when the game starts or when spawned
