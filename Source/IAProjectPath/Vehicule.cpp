@@ -164,7 +164,7 @@ bool AVehicule::Circuit(TArray<AActor*> targets) {
 	if (circuitIndexToReach < targets.Num()) {
 		if (targets[circuitIndexToReach]) {
 			VehiculeMovement(seek(targets[circuitIndexToReach]));
-			if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 500) {
+			if ((GetActorLocation() - targets[circuitIndexToReach]->GetActorLocation()).Size() <= 250) {
 				circuitIndexToReach++;
 			}
 			//return false;
@@ -206,7 +206,7 @@ void AVehicule::SeveralPoints(TArray<AActor*> targets) {
 	}
 	else {
 		if (targets.Num()>0 && targets[targets.Num() - 1]) {
-			VehiculeMovement(Arrival(targets[targets.Num() - 1], 5000));
+			VehiculeMovement(Arrival(targets[targets.Num() - 1], 1000));
 		}
 	}
 }
